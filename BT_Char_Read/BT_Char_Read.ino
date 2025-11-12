@@ -13,34 +13,39 @@
   The LED13 (built in LED) is blinked to show the program is running.  This
   blink can be moved inside the bluetooth if statement for debugging, or
   the normal serial pipe can be used.
+   
+  Note that the baord rate was changed to match with Serial.begin(9600);
+
+
+  // (HC)=(Uno).  VCC=5V, GND=GND, TX=RX(pin2),
+  // RX=DNC! (possible damage if 5V Uno TX drives to HC-05)
 */
 
 #include <SoftwareSerial.h>
 
-//receiver
-int led = 13; 
-unsigned char incomingByte;     
+// GLOBAL Varibales
+int LED13 = 13;                 // Init LED reciver light  
+unsigned char incomingByte;     // Init incoming characters bits from Bluetooth
+SoftwareSerial bluetooth(2,4);  // Defines serial object on pins 2 (RX/receive) and 4 (TX/transmit) for communicating with the HC-05 Bluetooth module.
 
-// HC-05
-SoftwareSerial bluetooth(2,4);  // RX, TX
 
 void setup() {
-  Serial.begin(9600);
-  Serial.println("Serial setup complete.");
-  pinMode(led, OUTPUT);
-  // Setup the HC-05 bluetooth device
-  // (HC)=(Uno).  VCC=5V, GND=GND, TX=RX(pin2),
-  // RX=DNC! (possible damage if 5V Uno TX drives to HC-05)
-  bluetooth.begin(9600);
+  Serial.begin(9600);                       // Init hardware serial port at 9,600 baud (for debugging)
+  Serial.println("Serial setup complete."); // Print confirmation message to serial monitor
+
+  pinMode(LED13, OUTPUT);                   // Define LED13 as output
+  bluetooth.begin(9600);                    // Init Bluetooth serial communication at 9,600 baud
 }
 
 void loop() {
-  digitalWrite(led,HIGH);
+  digitalWrite(LED13, HIGH);                 // Turn LED on Wait 1 second
   delay(1000);
-  digitalWrite(led,LOW);
+
+  digitalWrite(LED13, LOW);                  // Turn LED off Wait 1 second
   delay(1000);
-  if (bluetooth.available()) {  
-    incomingByte = (unsigned char) bluetooth.read();
-    Serial.write(incomingByte);
+  
+  if (bluetooth.available()) {                        // Check if data rece–––ived from Bluetooth
+    incomingByte = (unsigned char) bluetooth.read();  // Read incoming character
+    Serial.write(incomingByte);                       // Echo character to serial monitor for debugging
   }
 }
